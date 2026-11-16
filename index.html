@@ -1,0 +1,539 @@
+from pathlib import Path
+
+html = r'''
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sun Shine Coaching Academy | Fee Manager</title>
+    <style>
+        :root {
+            --navy: #172554;
+            --blue: #2563eb;
+            --bg: #f3f6fc;
+            --green: #15803d;
+            --red: #dc2626;
+            --amber: #d97706
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: #172033
+        }
+
+        header {
+            background: linear-gradient(120deg, #172554, #2563eb);
+            color: #fff;
+            padding: 24px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 25px
+        }
+
+        header p {
+            margin: 7px 0 0;
+            color: #dbeafe
+        }
+
+        .wrap {
+            max-width: 1450px;
+            margin: 24px auto;
+            padding: 0 18px
+        }
+
+        .notice {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 13px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            line-height: 1.5
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 17px;
+            box-shadow: 0 4px 15px #17255412
+        }
+
+        .card small {
+            color: #64748b
+        }
+
+        .card strong {
+            display: block;
+            font-size: 25px;
+            margin-top: 7px
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 4px 15px #17255412;
+            margin-bottom: 18px
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 14px
+        }
+
+        input,
+        select,
+        textarea {
+            font: inherit;
+            padding: 10px 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            min-width: 0
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid #bfdbfe;
+            border-color: var(--blue)
+        }
+
+        #search {
+            flex: 1;
+            min-width: 210px
+        }
+
+        button,
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 13px;
+            background: var(--blue);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block
+        }
+
+        button:hover,
+        .btn:hover {
+            filter: brightness(.94)
+        }
+
+        button.secondary {
+            background: #475569
+        }
+
+        button.green {
+            background: var(--green)
+        }
+
+        button.red {
+            background: var(--red)
+        }
+
+        button.amber {
+            background: var(--amber)
+        }
+
+        .table-wrap {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 11px 9px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px
+        }
+
+        th {
+            background: #eff6ff;
+            color: #1e3a8a;
+            position: sticky;
+            top: 0
+        }
+
+        .badge {
+            padding: 5px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold
+        }
+
+        .paid {
+            background: #dcfce7;
+            color: #166534
+        }
+
+        .unpaid {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        .due-soon {
+            background: #fef3c7;
+            color: #92400e
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap
+        }
+
+        .actions button {
+            font-size: 11px;
+            padding: 7px 9px
+        }
+
+        dialog {
+            border: 0;
+            border-radius: 15px;
+            max-width: 680px;
+            width: calc(100% - 24px);
+            padding: 0;
+            box-shadow: 0 20px 70px #0004
+        }
+
+        dialog::backdrop {
+            background: #0f172a99
+        }
+
+        .modal-head {
+            padding: 17px 20px;
+            background: #eff6ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .modal-body {
+            padding: 20px
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .field label {
+            font-size: 12px;
+            color: #475569;
+            font-weight: bold
+        }
+
+        .field input,
+        .field select {
+            width: 100%
+        }
+
+        .full {
+            grid-column: 1/-1
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+            margin-top: 18px
+        }
+
+        .small {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.5
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            padding: 22px;
+            font-size: 12px
+        }
+
+        @media(max-width:600px) {
+            header h1 {
+                font-size: 20px
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr
+            }
+
+            .full {
+                grid-column: auto
+            }
+
+            .wrap {
+                padding: 0 10px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div>
+            <h1>☀️ Sun Shine Coaching Academy</h1>
+            <p>Student Fee Management & Reminder Dashboard</p>
+        </div>
+        <div id="today"></div>
+    </header>
+    <div class="wrap">
+        <!-- <div class="notice"><b>Important:</b> This free version saves data in this browser on this device. WhatsApp
+            reminders are prepared with one click; you must press <b>Send</b> in WhatsApp. Fully automatic WhatsApp
+            sending needs an approved WhatsApp Business API/service and is not guaranteed free. Keep a backup using
+            Export CSV.</div> -->
+        <section class="cards">
+            <div class="card"><small>Total Students</small><strong id="total">0</strong></div>
+            <div class="card"><small>Monthly Fee Total</small><strong id="monthly">₹0</strong></div>
+            <div class="card"><small>Paid Students</small><strong id="paidCount">0</strong></div>
+            <div class="card"><small>Pending Students</small><strong id="pendingCount">0</strong></div>
+            <div class="card"><small>Total Outstanding</small><strong id="outstanding">₹0</strong></div>
+            <div class="card"><small>Reminders Due Today</small><strong id="reminderCount">0</strong></div>
+        </section>
+        <section class="panel">
+            <div class="toolbar">
+                <input id="search" placeholder="Search student, father, admission no. or mobile..." oninput="render()">
+                <select id="filter" onchange="render()">
+                    <option value="all">All Students</option>
+                    <option value="pending">Fee Pending</option>
+                    <option value="paid">Fully Paid</option>
+                    <option value="reminder">Reminder Due</option>
+                </select>
+                <button onclick="openForm()">＋ Add Student</button>
+                <button class="secondary" onclick="exportCSV()">Export CSV</button>
+                <button class="secondary" onclick="document.getElementById('importFile').click()">Import CSV</button>
+                <input type="file" id="importFile" accept=".csv,text/csv" hidden onchange="importCSV(event)">
+            </div>
+            <div class="small" style="margin-bottom:12px">Reminder rule: 2 days before the monthly due date, on the due
+                date, and every day after it while a balance remains. Due date repeats on the admission-date day each
+                month. If that day does not exist in a month, the last day of that month is used.</div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Adm. No.</th>
+                            <th>Student / Father</th>
+                            <th>Class</th>
+                            <th>Monthly Fee</th>
+                            <th>Paid</th>
+                            <th>Balance</th>
+                            <th>Next Due Date</th>
+                            <th>Status</th>
+                            <th>Mobile</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+        </section>
+        <section class="panel">
+            <h3 style="margin-top:0">📩 Today's Reminder Queue</h3>
+            <p class="small">Click WhatsApp to open a pre-filled reminder. Review the recipient and message, then press
+                Send in WhatsApp.</p>
+            <div id="queue"></div>
+        </section>
+    </div>
+    <dialog id="studentDialog">
+        <div class="modal-head"><b id="formTitle">Add Student</b><button class="secondary"
+                onclick="closeForm()">✕</button></div>
+        <div class="modal-body">
+            <form id="studentForm">
+                <input type="hidden" id="editId">
+                <div class="form-grid">
+                    <div class="field"><label>Admission No.</label><input id="admissionNo" required></div>
+                    <div class="field"><label>Student Name *</label><input id="name" required></div>
+                    <div class="field"><label>Father Name</label><input id="father"></div>
+                    <div class="field"><label>Class</label><input id="className"></div>
+                    <div class="field"><label>Monthly Fee (₹)</label><input id="fee" type="number" min="0" required>
+                    </div>
+                    <div class="field"><label>Paid This Month (₹)</label><input id="paid" type="number" min="0"
+                            value="0" required></div>
+                    <div class="field"><label>Admission Date</label><input id="admissionDate" type="date" required>
+                    </div>
+                    <div class="field"><label>Parent Mobile (with country code optional)</label><input id="mobile"
+                            inputmode="tel" placeholder="e.g. 9876543210"></div>
+                    <div class="field"><label>Scholarship?</label><select id="scholarship">
+                            <option>No</option>
+                            <option>Yes</option>
+                        </select></div>
+                    <div class="field"><label>Scholarship Amount (₹)</label><input id="scholarshipAmount" type="number"
+                            min="0" value="0"></div>
+                    <div class="field"><label>Gains Points</label><input id="points" placeholder="e.g. ★★★★★"></div>
+                    <div class="field"><label>Remarks</label><input id="remarks"></div>
+                </div>
+                <p class="small">Balance is calculated as Monthly Fee − Scholarship Amount − Paid. For a new month,
+                    update the paid amount to 0 (or the amount received for that month). This simple version tracks one
+                    current monthly cycle per student.</p>
+                <div class="modal-actions"><button type="button" class="secondary"
+                        onclick="closeForm()">Cancel</button><button type="submit" class="green">Save Student</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+    <script>
+        const initialStudents = [
+            { no: "1", name: "Ayush Yadav", father: "Mr. Vikash Yadav", cls: "4", fee: 400, paid: 400, date: "2026-08-24", mobile: "8090324272", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "2", name: "Harsh Yadav", father: "Mr. Sahablal Yadav", cls: "4", fee: 400, paid: 400, date: "2026-08-24", mobile: "9580744646", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "3", name: "Disha Yadav", father: "Mr. Sahablal Yadav", cls: "2", fee: 400, paid: 0, date: "2026-08-24", mobile: "9555038017", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "4", name: "Peehoo Yadav", father: "Mr. Dharmendra Yadav", cls: "2", fee: 400, paid: 0, date: "2026-08-24", mobile: "9506345391", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "5", name: "Saurya Yadav", father: "Mr. Vikash Yadav", cls: "2", fee: 400, paid: 400, date: "2026-08-24", mobile: "8090324272", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "6", name: "Shivansh Yadav", father: "Mr. Nilesh Yadav", cls: "2", fee: 400, paid: 300, date: "2026-08-24", mobile: "7992034988", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "7", name: "Aadarsh Yadav", father: "Mr. Sahablal Yadav", cls: "4", fee: 200, paid: 0, date: "2026-08-24", mobile: "9555038017", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "8", name: "Shiv Raj Yadav", father: "Mr. Umesh Yadav", cls: "5", fee: 300, paid: 0, date: "2026-08-24", mobile: "9336131728", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "9", name: "Ayush Yadav", father: "Mr. Vivek Yadav", cls: "4", fee: 400, paid: 400, date: "2026-08-24", mobile: "9984711268", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "10", name: "Arpit Yadav", father: "Mr. Vivek Yadav", cls: "4", fee: 400, paid: 400, date: "2026-08-24", mobile: "9984711268", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "11", name: "Anurag Yadav", father: "Mr. Vivek Yadav", cls: "4", fee: 200, paid: 200, date: "2026-08-24", mobile: "9984711268", sch: "No", schAmt: 0, remarks: "Good English reading", points: "★★★★★★★★★★" },
+            { no: "12", name: "Rishabh Pal", father: "Mr. Pankaj Pal", cls: "5", fee: 300, paid: 0, date: "2026-08-25", mobile: "9628717080", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "13", name: "Ashish Yadav", father: "Mr. Ashok Yadav", cls: "4", fee: 400, paid: 0, date: "2026-08-26", mobile: "7081383824", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "14", name: "Aryan Yadav", father: "Mr. Guddu", cls: "7", fee: 400, paid: 400, date: "2026-09-01", mobile: "9172083398", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "16", name: "Pari", father: "Mr. Ramesh Yadav", cls: "4", fee: 300, paid: 300, date: "2026-09-11", mobile: "8948391046", sch: "No", schAmt: 0, remarks: "English reading good", points: "★★★★★★★★★★" },
+            { no: "17", name: "Rakesh Yadav", father: "Mr. Chandresh Yadav", cls: "4", fee: 600, paid: 0, date: "2026-09-11", mobile: "9984372404", sch: "No", schAmt: 0, remarks: "English reading a little", points: "★★★★★★★★★★" },
+            { no: "18", name: "Aman", father: "", cls: "5", fee: 300, paid: 300, date: "2026-09-12", mobile: "7607316662", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★★★" },
+            { no: "19", name: "Avnish", father: "Mr. Javahir", cls: "3", fee: 300, paid: 0, date: "2026-09-23", mobile: "9161337982", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★★★" },
+            { no: "20", name: "Aarav Yadav", father: "Mr. Sarvesh Yadav", cls: "2", fee: 400, paid: 400, date: "2026-07-29", mobile: "7007428154", sch: "No", schAmt: 0, remarks: "Hindi and Maths weak", points: "★★★★★★★★★★" },
+            { no: "21", name: "Sandhya", father: "Mr. Sanjay Yadav", cls: "1", fee: 400, paid: 0, date: "2026-10-02", mobile: "", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "22", name: "Aaditya", father: "Mr. Javahirlal Yadav", cls: "5", fee: 400, paid: 0, date: "2026-10-02", mobile: "9161337982", sch: "No", schAmt: 0, remarks: "", points: "★★★★★★★★★★" },
+            { no: "23", name: "Pari", father: "Mr. Rahul Kumar", cls: "4", fee: 400, paid: 300, date: "2026-10-13", mobile: "9007606642", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★★★" },
+            { no: "24", name: "Ekta", father: "Mr. Rahul Kumar", cls: "0", fee: 400, paid: 300, date: "2026-10-14", mobile: "9007606642", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★★★" },
+            { no: "25", name: "Yash", father: "Mr. Ratan", cls: "3", fee: 400, paid: 300, date: "2026-10-15", mobile: "9918782138", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★★★" },
+            { no: "26", name: "Priyal Pal", father: "Mr. Jitendra Pal", cls: "1", fee: 400, paid: 0, date: "2026-10-15", mobile: "", sch: "No", schAmt: 0, remarks: "", points: "" },
+            { no: "27", name: "Ansh Yadav", father: "Kamlesh Yadav", cls: "7", fee: 400, paid: 0, date: "2026-10-24", mobile: "9137986782", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★★★" },
+            { no: "28", name: "Vansh Yadav", father: "Kamlesh Yadav", cls: "2", fee: 300, paid: 0, date: "2026-10-24", mobile: "9137986782", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★★★" },
+            { no: "29", name: "Aditi Yadav", father: "Ashok Yadav", cls: "5", fee: 400, paid: 0, date: "2026-08-24", mobile: "", sch: "No", schAmt: 0, remarks: "", points: "" },
+            { no: "30", name: "Hemant Kumar", father: "Mr. Chandra Bhusan", cls: "4", fee: 400, paid: 0, date: "2026-11-01", mobile: "9838214307", sch: "No", schAmt: 0, remarks: "English reading needs work", points: "★★★★★★★★" }
+        ];
+        let students = JSON.parse(localStorage.getItem("sunshine_fee_students_v1") || "null") || initialStudents.map((s, i) => ({ ...s, id: String(Date.now() + i) }));
+        function save() { localStorage.setItem("sunshine_fee_students_v1", JSON.stringify(students)) }
+        function money(n) { return "₹" + Number(n || 0).toLocaleString("en-IN") }
+        function parseDate(s) { if (!s) return new Date(); let [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d) }
+        function dateStr(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0") }
+        function nextDue(s) {
+            const a = parseDate(s.date), now = new Date(); now.setHours(0, 0, 0, 0);
+            let y = now.getFullYear(), m = now.getMonth(), day = a.getDate();
+            let candidate = new Date(y, m, Math.min(day, new Date(y, m + 1, 0).getDate()));
+            if (candidate < now) candidate = new Date(y, m + 1, Math.min(day, new Date(y, m + 2, 0).getDate()));
+            return candidate;
+        }
+        function balance(s) { return Math.max(0, Number(s.fee || 0) - Number(s.schAmt || 0) - Number(s.paid || 0)) }
+        function dueForReminder(s) {
+            if (balance(s) <= 0) return false;
+            const due = nextDue(s), today = new Date(); today.setHours(0, 0, 0, 0);
+            const diff = Math.round((due - today) / 86400000);
+            return diff === 2 || diff === 0 || diff < 0;
+        }
+        function reminderText(s) {
+            const due = nextDue(s);
+            return `Namaste ${s.father || "Parent"},\n\nThis is a gentle fee reminder from Sun Shine Coaching Academy.\nStudent: ${s.name}\nClass: ${s.cls}\nMonthly fee: ${money(s.fee)}\nPaid: ${money(s.paid)}\nBalance: ${money(balance(s))}\nDue date: ${due.toLocaleDateString("en-IN")}\n\nKindly deposit the pending fee. If already paid, please ignore this message.\n\nThank you,\nSun Shine Coaching Academy`;
+        }
+        function wa(s) {
+            let n = (s.mobile || "").replace(/\D/g, "");
+            if (n.length === 10) n = "91" + n;
+            if (!n) { alert("Is student ka mobile number add nahi hai. Edit karke number save karein."); return }
+            window.open("https://wa.me/" + n + "?text=" + encodeURIComponent(reminderText(s)), "_blank");
+        }
+        function render() {
+            const q = document.getElementById("search").value.toLowerCase(), f = document.getElementById("filter").value;
+            let total = students.length, paid = students.filter(s => balance(s) === 0).length, pending = total - paid, out = students.reduce((a, s) => a + balance(s), 0), queue = students.filter(dueForReminder);
+            document.getElementById("total").textContent = total;
+            document.getElementById("monthly").textContent = money(students.reduce((a, s) => a + Number(s.fee || 0), 0));
+            document.getElementById("paidCount").textContent = paid;
+            document.getElementById("pendingCount").textContent = pending;
+            document.getElementById("outstanding").textContent = money(out);
+            document.getElementById("reminderCount").textContent = queue.length;
+            const filtered = students.filter(s => {
+                const text = [s.no, s.name, s.father, s.mobile, s.cls].join(" ").toLowerCase();
+                return text.includes(q) && (f === "all" || (f === "pending" && balance(s) > 0) || (f === "paid" && balance(s) === 0) || (f === "reminder" && dueForReminder(s)));
+            });
+            document.getElementById("rows").innerHTML = filtered.map(s => {
+                const bal = balance(s), due = nextDue(s), status = bal === 0 ? "Paid" : "Pending";
+                return `<tr><td>${esc(s.no)}</td><td><b>${esc(s.name)}</b><br><span class="small">${esc(s.father || "Father name not added")}</span></td><td>${esc(s.cls)}</td><td>${money(s.fee)}</td><td>${money(s.paid)}</td><td><b>${money(bal)}</b></td><td>${due.toLocaleDateString("en-IN")}</td><td><span class="badge ${bal === 0 ? "paid" : "unpaid"}">${status}</span></td><td>${esc(s.mobile || "—")}</td><td><div class="actions"><button class="green" onclick="waById('${s.id}')">WhatsApp</button><button class="secondary" onclick="editStudent('${s.id}')">Edit</button><button class="red" onclick="deleteStudent('${s.id}')">Delete</button></div></td></tr>`;
+            }).join("") || '<tr><td colspan="10">No students found.</td></tr>';
+            document.getElementById("queue").innerHTML = queue.length ? queue.map(s => `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee"><span><b>${esc(s.name)}</b> — balance ${money(balance(s))}, due ${nextDue(s).toLocaleDateString("en-IN")}</span><button class="green" onclick="waById('${s.id}')">Send WhatsApp</button></div>`).join("") : "<p>No reminders due today. (This list updates when you open/refresh the page.)</p>";
+        }
+        function esc(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])) }
+        function waById(id) { let s = students.find(x => x.id === id); if (s) wa(s) }
+        function openForm() { document.getElementById("studentForm").reset(); document.getElementById("editId").value = ""; document.getElementById("admissionNo").value = String(Math.max(0, ...students.map(s => Number(s.no) || 0)) + 1); document.getElementById("admissionDate").value = dateStr(new Date()); document.getElementById("paid").value = 0; document.getElementById("scholarshipAmount").value = 0; document.getElementById("formTitle").textContent = "Add Student"; document.getElementById("studentDialog").showModal() }
+        function closeForm() { document.getElementById("studentDialog").close() }
+        function editStudent(id) {
+            const s = students.find(x => x.id === id); if (!s) return;
+            const vals = { editId: s.id, admissionNo: s.no, name: s.name, father: s.father, className: s.cls, fee: s.fee, paid: s.paid, admissionDate: s.date, mobile: s.mobile, scholarship: s.sch, scholarshipAmount: s.schAmt, remarks: s.remarks, points: s.points };
+            Object.entries(vals).forEach(([k, v]) => { let el = document.getElementById(k); if (el) el.value = v ?? "" });
+            document.getElementById("formTitle").textContent = "Edit Student"; document.getElementById("studentDialog").showModal();
+        }
+        document.getElementById("studentForm").addEventListener("submit", e => {
+            e.preventDefault(); let id = document.getElementById("editId").value;
+            const s = { id: id || String(Date.now()), no: document.getElementById("admissionNo").value.trim(), name: document.getElementById("name").value.trim(), father: document.getElementById("father").value.trim(), cls: document.getElementById("className").value.trim(), fee: Number(document.getElementById("fee").value), paid: Number(document.getElementById("paid").value), date: document.getElementById("admissionDate").value, mobile: document.getElementById("mobile").value.trim(), sch: document.getElementById("scholarship").value, schAmt: Number(document.getElementById("scholarshipAmount").value || 0), remarks: document.getElementById("remarks").value.trim(), points: document.getElementById("points").value.trim() };
+            if (id) { students = students.map(x => x.id === id ? s : x) } else students.push(s);
+            save(); closeForm(); render();
+        });
+        function deleteStudent(id) { let s = students.find(x => x.id === id); if (s && confirm("Delete " + s.name + "? This cannot be undone unless you have exported a backup.")) { students = students.filter(x => x.id !== id); save(); render() } }
+        function exportCSV() {
+            const cols = ["no", "name", "father", "cls", "fee", "paid", "date", "mobile", "sch", "schAmt", "remarks", "points"];
+            const lines = [cols.join(","), ...students.map(s => cols.map(k => '"' + String(s[k] ?? "").replace(/"/g, '""') + '"').join(","))];
+            const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" }), a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sunshine-students-backup.csv"; a.click(); URL.revokeObjectURL(a.href);
+        }
+        function importCSV(e) {
+            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const lines = reader.result.replace(/^\uFEFF/, "").split(/\r?\n/).filter(Boolean);
+                    const parse = line => { let out = [], cur = "", q = false; for (let i = 0; i < line.length; i++) { let c = line[i]; if (c === '"' && line[i + 1] === '"') { cur += '"'; i++ } else if (c === '"') q = !q; else if (c === "," && !q) { out.push(cur); cur = "" } else cur += c } out.push(cur); return out };
+                    const headers = parse(lines.shift()); let imported = lines.map(line => { let a = parse(line), o = {}; headers.forEach((h, i) => o[h] = a[i] || ""); return { id: String(Date.now() + Math.random()), no: o.no, name: o.name, father: o.father, cls: o.cls, fee: Number(o.fee || 0), paid: Number(o.paid || 0), date: o.date || dateStr(new Date()), mobile: o.mobile, sch: o.sch || "No", schAmt: Number(o.schAmt || 0), remarks: o.remarks, points: o.points } });
+                    if (imported.length && confirm(imported.length + " students import karne hain? Existing list replace ho jayegi.")) { students = imported; save(); render() }
+                } catch (err) { alert("CSV file read nahi ho payi.") } e.target.value = ""
+            }; reader.readAsText(file);
+        }
+        document.getElementById("today").textContent = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        save(); render();
+    </script>
+    <footer>Sun Shine Coaching Academy • Free local fee manager • Export a backup regularly</footer>
+</body>
+
+</html>'''
+
+path = Path("/mnt/data/Sun_Shine_Fee_Manager.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path} ({path.stat().st_size:,} bytes)")
